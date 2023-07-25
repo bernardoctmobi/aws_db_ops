@@ -20,16 +20,43 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      Events:
       Environment:
         Variables:
           DYNAMODB_TABLE: !Ref UsersTable
+      Events:
         DbWrite:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /write
             Method: post
             ContentType: application/json
+            RequestModel:
+              ModelName: InserRequestModel
+              RestaApiId:
+                Ref: ServerlessRestApi
+
+  InsertRequestModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId:
+        Ref: ServerlessRestApi
+      ContentType: application/json
+      Name: InsertRequestModel
+      Schema:
+        $schema: http://json-schema.org/draft-04/schema#
+        title: InsertRequestSchema
+        type: object
+        properties:
+          userId:
+            type: string
+          name:
+            type: string
+          surname:
+            type: string
+        require:
+          - itemId
+          - name
+          - surname
 
   UsersTable:
     Type: AWS::DynamoDB::Table
