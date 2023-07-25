@@ -38,4 +38,4 @@ Outputs:
     Value: !GetAtt DbWriteFunction.Arn
   DbWriteFunctionFunctionIamRole:
     Description: "Implicit IAM Role created for function"
-    Value: !GetAtt DbWriteFunctionFunctionRole.Arn
+    Value: !GetAtt DbWriteFunctionRole.Arn
