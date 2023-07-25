@@ -23,23 +23,23 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE: !Ref UsersTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
       Events:
         DbWrite:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /write
             Method: post
-            ContentType: application/json
             RequestModel:
-              ModelName: InserRequestModel
-              RestaApiId:
-                Ref: ServerlessRestApi
+              ModelName: !Ref InsertRequestModel
+              RestaApiId: !Ref ServerlessRestApi
 
   InsertRequestModel:
     Type: AWS::ApiGateway::Model
     Properties:
-      RestApiId:
-        Ref: ServerlessRestApi
+      RestApiId: !Ref ServerlessRestApi
       ContentType: application/json
       Name: InsertRequestModel
       Schema:
@@ -53,7 +53,7 @@ Resources:
             type: string
           surname:
             type: string
-        require:
+        required:
           - itemId
           - name
           - surname
@@ -65,12 +65,6 @@ Resources:
       AttributeDefinitions:
         -
           AttributeName: userId
-          AttributeType: S
-        -
-          AttributeName: name
-          AttributeType: S
-        -
-          AttributeName: surname
           AttributeType: S
       KeySchema:
         -
@@ -84,7 +78,7 @@ Outputs:
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   DbWriteApi:
     Description: "API Gateway endpoint URL for writing on the table"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/dev/write/"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/write/"
   DbWriteFunction:
     Description: "Function ARN"
     Value: !GetAtt DbWriteFunction.Arn
