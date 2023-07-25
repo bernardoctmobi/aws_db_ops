@@ -1,26 +1,48 @@
-/**
- *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
- *
- * Context doc: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html 
- * @param {Object} context
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- * 
- */
+const AWS = require('aws-sdk');
+const dynamoDB = new AWS.dynamoDB.DocumentClient();
 
-export const lambdaHandler = async (event, context) => {
+export const lambdaHandler = async (event) => {
+    console.log(event);
+    
     try {
+        const requestBody = JSON.parse(event.body);
+        await insertItem(requestBody);
+
         return {
-            'statusCode': 200,
-            'body': JSON.stringify({
-                message: 'hello world',
-            })
+            statusCode: 200,
+            body: JSON.stringify({ message: 'Elemento inserito con successo' }),
         }
     } catch (err) {
         console.log(err);
-        return err;
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: 'Qualcosa è andato storto :(' }),
+        };
     }
 };
+
+async function insertItem(itemData) {
+    const params = {
+        Key: {
+            userId: itemData.userId,
+        },
+        UpdateExpression: 'SET #name = :name, #surname = :surname',
+        ExpressionAttributeNames: {
+            '#name': 'name',
+            '#surname': 'surname',
+        },
+        ExpressionAttributeValuse: {
+            ':name': itemData.name,
+            ':surname': itemData.surname,
+        },
+        TableName: process.env.DYNAMODB_TABLE,
+        Item: itemData,
+    };
+
+    try {
+        await dynamoDB.update(params).promise();
+    } catch (error) {
+        console.error(`Errore durante l'aggiornamento dell'elemento:`, error);
+        throw error;
+    }
+}

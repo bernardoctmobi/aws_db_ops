@@ -11,6 +11,7 @@ Globals:
     Timeout: 3
 
 Resources:
+
   DbWriteFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -20,11 +21,35 @@ Resources:
       Architectures:
         - x86_64
       Events:
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref UsersTable
         DbWrite:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /write
-            Method: get
+            Method: post
+            ContentType: application/json
+
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: UsersTable
+      AttributeDefinitions:
+        -
+          AttributeName: userId
+          AttributeType: S
+        -
+          AttributeName: name
+          AttributeType: S
+        -
+          AttributeName: surname
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: userId
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
