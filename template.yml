@@ -1,9 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  writeondb
-
-  Sample SAM Template for writeondb
+  read and write on dynamodb
   
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -12,10 +10,10 @@ Globals:
 
 Resources:
 
-  DbWriteFunction:
+  OperationsFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: dbWrite/
+      CodeUri: rw/
       Handler: app.lambdaHandler
       Runtime: nodejs18.x
       Architectures:
@@ -34,7 +32,12 @@ Resources:
             Method: post
             RequestModel:
               ModelName: !Ref InsertRequestModel
-              RestaApiId: !Ref ServerlessRestApi
+              RestApiId: !Ref ServerlessRestApi
+        DbRead:
+          Type: Api
+          Properties:
+            Path: /read/{userId}
+            Method: get
 
   InsertRequestModel:
     Type: AWS::ApiGateway::Model
@@ -54,14 +57,14 @@ Resources:
           surname:
             type: string
         required:
-          - itemId
+          - userId
           - name
           - surname
 
   UsersTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: UsersTable
+      TableName: RWUsersTable
       AttributeDefinitions:
         -
           AttributeName: userId
@@ -79,9 +82,12 @@ Outputs:
   DbWriteApi:
     Description: "API Gateway endpoint URL for writing on the table"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/write/"
-  DbWriteFunction:
+  DbReadApi:
+    Description: "API Gateway endpoint URL for reading the table"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/read/"
+  OperationsFunction:
     Description: "Function ARN"
-    Value: !GetAtt DbWriteFunction.Arn
-  DbWriteFunctionFunctionIamRole:
+    Value: !GetAtt OperationsFunction.Arn
+  OperationsFunctionFunctionIamRole:
     Description: "Implicit IAM Role created for function"
-    Value: !GetAtt DbWriteFunctionRole.Arn
+    Value: !GetAtt OperationsFunctionRole.Arn
