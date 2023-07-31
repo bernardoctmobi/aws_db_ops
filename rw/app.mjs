@@ -42,8 +42,8 @@ async function getItem(userId) {
     try {
         const response = await docClient.send(new GetCommand(params));
         console.log(response);
-        if (response.Item === null) {
-            response.message = `No such item in DB`;
+        if (response.Item === undefined) {
+            response.Message = `No such item in DB`;
         }
         return buildResponse(200, response);
     } catch (error) {
