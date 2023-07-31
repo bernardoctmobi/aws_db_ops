@@ -19,62 +19,6 @@ export const lambdaHandler = async (event) => {
             response = buildResponse(404, '404 Not Found');
     }
     return response;
-    // switch (true) {
-    //     case event.httpMethod === 'GET':
-    //         try {
-    //             const requestBody = JSON.parse(event.body);
-    //             const response = await getItem(requestBody);
-    //             return {
-    //                 statusCode: 200,
-    //                 headers: {
-    //                     "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify(response),
-    //             }
-    //         } catch (err) {
-    //             console.log(err);
-    //             return {
-    //                 statusCode: 500,
-    //                 headers: {
-    //                     "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify({
-    //                     statusCode: 500,
-    //                     error: 'Internal Server Error',
-    //                     internalError: JSON.stringify(err),
-    //                 }),
-    //             }
-    //         }
-    //     case event.httpMethod === 'POST':
-    //         try {
-    //             const requestBody = JSON.parse(event.body);
-    //             const response = await insertItem(requestBody);
-    //             return {
-    //                 statusCode: 200,
-    //                 headers: {
-    //                     "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify(response),
-    //             }
-    //         } catch (err) {
-    //             console.log(err);
-    //             return {
-    //                 statusCode: 500,
-    //                 headers: {
-    //                     "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify({
-    //                     statusCode: 500,
-    //                     error: 'Internal Server Error',
-    //                     internalError: JSON.stringify(err),
-    //                 }),
-    //             }
-    //         }
-    // }
 };
 
 function buildResponse(statusCode, body) {
